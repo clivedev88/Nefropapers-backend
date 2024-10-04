@@ -1,28 +1,35 @@
-require('dotenv').config(); // Carregar variáveis de ambiente
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
-app.use(bodyParser.json()); // Middleware para interpretar JSON
 
-// Importação das rotas
+// CORS e BodyParser
+app.use(cors({ origin: 'http://127.0.0.1:5500' }));
+app.use(bodyParser.json());
+
+// Rotas
 const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
-const quizRoutes = require('./routes/quizRoutes'); // Rotas para provas
+const quizRoutes = require('./routes/quizRoutes');
 
-// Uso das rotas
-app.use('/auth', authRoutes); // Rotas para autenticação
-app.use('/cursos', courseRoutes); // Rotas para cursos
-app.use('/cursos', quizRoutes); // Rotas para provas (associadas a cursos)
+app.use('/auth', authRoutes);
+app.use('/cursos', courseRoutes);
+app.use('/cursos', quizRoutes);
 
-// Verificação de variáveis de ambiente
+// Checagem de variáveis de ambiente
 if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
   console.error('Erro: Variáveis de ambiente Supabase não configuradas.');
-  process.exit(1); // Finaliza o processo se as variáveis não estiverem configuradas
+  process.exit(1);
 }
 
-// Inicializando o servidor
+app.get('/', (req, res) => {
+  res.send('Backend funcionando!');
+});
+
+// Inicialização do servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

@@ -1,52 +1,40 @@
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// Função para listar provas por curso
+// Controlador de provas
 exports.listQuizzesByCourse = async (req, res) => {
-    const cursoId = req.params.cursoId; // Obtém o ID do curso dos parâmetros da URL
+    const cursoId = req.params.cursoId;
     const { data, error } = await supabase
         .from('provas')
         .select('*')
-        .eq('id_curso', cursoId); // Filtra provas pelo ID do curso
+        .eq('id_curso', cursoId);
 
     if (error) {
         return res.status(500).json({ error: error.message });
     }
 
-    res.status(200).json(data); // Retorna as provas associadas ao curso
+    res.status(200).json(data);
 };
 
-// Função para criar uma nova prova individual
 exports.createQuiz = async (req, res) => {
-    const cursoId = req.params.cursoId; // Obtém o ID do curso dos parâmetros da URL
-    const { pergunta, opcao_a, opcao_b, opcao_c, opcao_d, resp_corr, categoria } = req.body; // Obtém os dados da prova
+    const cursoId = req.params.cursoId;
+    const { pergunta, opcao_a, opcao_b, opcao_c, opcao_d, resp_corr, categoria } = req.body;
 
-    // Verifica se todos os campos obrigatórios foram enviados
     if (!pergunta || !opcao_a || !opcao_b || !opcao_c || !opcao_d || !resp_corr || !categoria) {
         return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
     }
 
     const { data, error } = await supabase
         .from('provas')
-        .insert([{
-            id_curso: cursoId, // Relaciona a prova ao curso
-            pergunta,
-            opcao_a,
-            opcao_b,
-            opcao_c,
-            opcao_d,
-            resp_corr,
-            categoria
-        }]);
+        .insert([{ id_curso: cursoId, pergunta, opcao_a, opcao_b, opcao_c, opcao_d, resp_corr, categoria }]);
 
     if (error) {
         return res.status(500).json({ error: error.message });
     }
 
-    res.status(201).json(data); // Retorna a prova criada
+    res.status(201).json(data);
 };
 
-// Função para criar um simulado com base nas categorias e quantidades fornecidas
 exports.createQuizFromCategories = async (req, res) => {
     const cursoId = req.params.cursoId;
     const { categorias } = req.body;

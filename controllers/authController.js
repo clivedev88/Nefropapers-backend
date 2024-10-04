@@ -1,34 +1,32 @@
 const authService = require('../services/authService');
 
-// Função para registrar um novo usuário
+// Controlador de autenticação
 exports.register = async (req, res) => {
-    const { email, senha } = req.body; // Pegando e-mail e senha do corpo da requisição
+    const { email, senha } = req.body;
     if (!email || !senha) {
         return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
     }
 
-    const { data, error } = await authService.registerUser(email, senha); // Chama o serviço de autenticação para registrar
+    const { data, error } = await authService.registerUser(email, senha);
     if (error) {
         return res.status(500).json({ error: error.message });
     }
-    res.status(201).json(data); // Retorna os dados do usuário registrado
+    res.status(201).json(data);
 };
 
-// Função para login
 exports.login = async (req, res) => {
     const { email, senha } = req.body;
     if (!email || !senha) {
         return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
     }
 
-    const { data, error } = await authService.loginUser(email, senha); // Chama o serviço de autenticação para login
+    const { data, error } = await authService.loginUser(email, senha);
     if (error) {
         return res.status(401).json({ error: error.message });
     }
-    res.status(200).json(data); // Retorna os dados do usuário logado
+    res.status(200).json(data);
 };
 
-// Função para reenvio de confirmação de e-mail
 exports.resendConfirmation = async (req, res) => {
     const { email } = req.body;
 
